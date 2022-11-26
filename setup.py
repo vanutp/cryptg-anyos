@@ -6,7 +6,7 @@ import os
 from setuptools import find_packages, setup
 from setuptools_rust import RustExtension
 
-PACKAGE_NAME = "cryptg"
+PACKAGE_NAME = "cryptg-anylinux"
 PACKAGE_VERSION = "0.4.0"
 ENVVAR_VERSION_SUFFIX = "PYPI_SETUP_VERSION_SUFFIX"
 
@@ -15,7 +15,7 @@ def main(args):
     with open("README.rst", encoding='utf-8') as f:
         long_description = f.read()
 
-    url = "https://github.com/cher-nov/" + PACKAGE_NAME
+    url = "https://github.com/vanutp/" + PACKAGE_NAME
 
     setup(
         name=PACKAGE_NAME,
