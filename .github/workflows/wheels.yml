@@ -20,16 +20,32 @@ on:
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{matrix.arch}} for ${{ matrix.os }}
+    name: Build wheels on ${{ matrix.os }} for ${{matrix.arch}} ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
+    concurrency:
+      group: ${{ matrix.os }}-${{ matrix.arch }}
     strategy:
       matrix:
-        os: [ ubuntu-20.04, windows-2019, macos-11 ]
+        os: [ windows-2019, macos-11 ]
         arch: [ auto ]
+        target: [ '' ]
         rust_target: [ '' ]
         include:
-          - os: ubuntu-20.04
+          - os: self-hosted
             arch: aarch64
+            target: manylinux_
+            rust_target: ''
+          - os: self-hosted
+            arch: aarch64
+            target: musllinux_
+            rust_target: ''
+          - os: self-hosted
+            arch: auto
+            target: manylinux_
+            rust_target: ''
+          - os: self-hosted
+            arch: auto
+            target: musllinux_
             rust_target: ''
           # FIXME: disabled due to linker issue
           # - os: windows-2022
@@ -57,14 +73,19 @@ jobs:
       - uses: docker/setup-qemu-action@v2
         if: ${{ matrix.arch == 'aarch64' }}
         name: Set up QEMU
-      - uses: pypa/cibuildwheel@v2.11.2
-        env:
+      - uses: actions/setup-python@v4
+        name: Set up Python
+        with:
+          python-version: 3.11
+        if: matrix.os != 'self-hosted'
+      - env:
           CIBW_BUILD_VERBOSITY: "1"
-          CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
+          CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && (yum install -y openssl-devel || apk add openssl-dev)"
           CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
           CIBW_ARCHS: ${{matrix.arch}}
-          CIBW_SKIP: 'cp36-* *musllinux*'
-
+          CIBW_BUILD: '*${{matrix.target}}*'
+          CIBW_SKIP: 'cp36-* *-musllinux_i686'
+        run: pipx run cibuildwheel==2.11.2
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
