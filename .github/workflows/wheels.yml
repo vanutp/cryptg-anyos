@@ -60,7 +60,7 @@ jobs:
       - uses: actions/setup-python@v4
         name: Set up Python
         with:
-          python-version: 3.11
+          python-version: 3.12
         if: matrix.os != 'self-hosted'
       - env:
           CIBW_BUILD_VERBOSITY: "1"
@@ -68,7 +68,7 @@ jobs:
           CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
           CIBW_ARCHS: ${{matrix.arch}}
           CIBW_SKIP: 'cp36-*'
-        run: pipx run cibuildwheel==2.11.2
+        run: pipx run cibuildwheel==2.16.2
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
