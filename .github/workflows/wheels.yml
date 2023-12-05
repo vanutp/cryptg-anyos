@@ -59,16 +59,16 @@ jobs:
         name: Set up QEMU
       - uses: actions/setup-python@v4
         name: Set up Python
+        id: py
         with:
           python-version: 3.12
-        if: matrix.os != 'self-hosted'
       - env:
           CIBW_BUILD_VERBOSITY: "1"
-          CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
+          CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel || apk add openssl-dev"
           CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
           CIBW_ARCHS: ${{matrix.arch}}
-          CIBW_SKIP: 'cp36-*'
-        run: pipx run cibuildwheel==2.16.2
+          CIBW_SKIP: 'cp36-* *musllinux_i686*'
+        run: pipx run --python ${{ steps.py.outputs.python-path }} cibuildwheel==2.16.2
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
