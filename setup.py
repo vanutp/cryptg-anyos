@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 from setuptools_rust import RustExtension
 
 PACKAGE_NAME = "cryptg-anyos"
-PACKAGE_VERSION = "0.4.2"
+PACKAGE_VERSION = "0.4.1"
 ENVVAR_VERSION_SUFFIX = "PYPI_SETUP_VERSION_SUFFIX"
 
 
