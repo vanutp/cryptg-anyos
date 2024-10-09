@@ -24,7 +24,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ self-hosted, windows-2019, macos-11 ]
+        os: [ self-hosted, windows-2019, macos-15 ]
         arch: [ auto ]
         rust_target: [ '' ]
         include:
@@ -35,7 +35,7 @@ jobs:
           # - os: windows-2022
           #   arch: ARM64
           #   rust_target: 'aarch64-pc-windows-msvc'
-          - os: macos-11
+          - os: macos-15
             arch: arm64
             rust_target: 'aarch64-apple-darwin'
 
@@ -54,7 +54,7 @@ jobs:
         if: ${{ matrix.rust_target != '' }}
         run: rustup target add ${{ matrix.rust_target }}
       - uses: actions/checkout@v3
-      - uses: docker/setup-qemu-action@v2
+      - uses: docker/setup-qemu-action@v3
         if: ${{ matrix.arch == 'aarch64' }}
         name: Set up QEMU
       - uses: actions/setup-python@v4
@@ -62,9 +62,10 @@ jobs:
         id: py
         with:
           python-version: 3.13
-      - env:
+      - 
+        env:
           CIBW_BUILD_VERBOSITY: "1"
-          CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel || apk add openssl-dev"
+          CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y"
           CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
           CIBW_ARCHS: ${{matrix.arch}}
           CIBW_SKIP: 'cp36-* cp37-* *musllinux_i686*'
