@@ -61,7 +61,7 @@ jobs:
         name: Set up Python
         id: py
         with:
-          python-version: 3.12
+          python-version: 3.13
       - env:
           CIBW_BUILD_VERBOSITY: "1"
           CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel || apk add openssl-dev"
